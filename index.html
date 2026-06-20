@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My AI Interviewer | 나만을 위한 스마트 AI 면접관</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js for Evaluation Radar Chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Custom Styling -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Global App Container -->
+  <div id="app">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-container">
+        <div class="logo" id="btn-home-logo">
+          <i class="fa-solid fa-brain-circuit text-teal"></i>
+          <span class="logo-text">My AI <span class="text-teal">Interviewer</span></span>
+        </div>
+        <nav class="header-nav">
+          <button id="btn-theme-toggle" class="btn-icon-only" title="화면 테마 전환">
+            <i class="fa-solid fa-moon"></i>
+          </button>
+          <button id="btn-show-key-modal" class="btn-secondary btn-sm">
+            <i class="fa-solid fa-key"></i> Gemini API 설정
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content Area (SPA Views) -->
+    <main class="app-content">
+
+      <!-- VIEW 1: HOME (Welcome Screen) -->
+      <section id="view-home" class="app-view active">
+        <div class="hero-section">
+          <div class="hero-badge"><i class="fa-solid fa-sparkles"></i> 1:1 맞춤형 AI 모의 면접 플랫폼</div>
+          <h1 class="hero-title">당신의 프로젝트와 경험으로<br>완벽한 <span class="gradient-text">AI 모의 면접</span>을 준비하세요</h1>
+          <p class="hero-subtitle">
+            전공, 직무, 프로젝트 경험을 입력하면 AI가 맞춤형 질문을 설계하고,<br>
+            답변에 대한 심층 평가 및 역량 리포트까지 원스톱으로 제공합니다.
+          </p>
+          <div class="hero-actions">
+            <button id="btn-start-app" class="btn-primary btn-lg">
+              시작하기 <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-user-gear"></i></div>
+            <h3>경험 기반 질문 설계</h3>
+            <p>전공과 자기소개서, 진행했던 프로젝트를 분석해 실제 면접관이 주목할 포인트를 짚어냅니다.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-microphone-lines"></i></div>
+            <h3>실제 같은 면접 환경</h3>
+            <p>음성 인식(STT) 및 음성 합성(TTS) 기능을 통해 실제 대면 면접을 보는 듯한 고도의 몰입감을 선사합니다.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-chart-pie"></i></div>
+            <h3>정교한 역량 분석 리포트</h3>
+            <p>5가지 핵심 면접 역량 지표를 진단하고, 잘한 점과 개선 방향, 모범 추천 답변까지 분석해 드립니다.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 2: ONBOARDING (User Profile Input) -->
+      <section id="view-onboarding" class="app-view">
+        <div class="container-sm">
+          <div class="section-header">
+            <span class="step-indicator">단계 1 / 3</span>
+            <h2>면접자 프로필 등록</h2>
+            <p>입력하신 정보를 바탕으로 면접관이 개인 맞춤형 질문을 출제합니다.</p>
+          </div>
+
+          <form id="form-profile" class="profile-form">
+            <div class="form-group-row">
+              <div class="form-group">
+                <label for="input-major">전공 <span class="required">*</span></label>
+                <input type="text" id="input-major" placeholder="예: 컴퓨터공학과, 경영학과" required>
+              </div>
+              <div class="form-group">
+                <label for="input-job">지원 직무 <span class="required">*</span></label>
+                <input type="text" id="input-job" placeholder="예: 프론트엔드 개발자, 마케터" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="input-projects">프로젝트 경험 (주요 기술 및 역할) <span class="required">*</span></label>
+              <textarea id="input-projects" rows="4" placeholder="진행했던 대표적인 프로젝트 이름과 본인의 역할, 사용 기술 등을 구체적으로 작성해 주세요. (예: React 기반의 쇼핑몰 웹앱 개발, 장바구니 및 결제 기능 구현 담당)" required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="input-intro">자기소개 및 강점 (선택)</label>
+              <textarea id="input-intro" rows="4" placeholder="자신을 나타내는 간단한 소개나 본인의 강점, 입사 후 포부 등을 작성해 주시면 면접 질문이 더욱 정교해집니다."></textarea>
+            </div>
+
+            <div class="form-actions justify-between">
+              <button type="button" class="btn-outline btn-back-home"><i class="fa-solid fa-chevron-left"></i> 홈으로</button>
+              <button type="submit" class="btn-primary">다음 단계로 <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- VIEW 3: LOBBY (Interview Settings) -->
+      <section id="view-lobby" class="app-view">
+        <div class="container-sm">
+          <div class="section-header">
+            <span class="step-indicator">단계 2 / 3</span>
+            <h2>면접 환경 설정</h2>
+            <p>원하는 면접관의 성향과 질문 구성을 조정해 보세요.</p>
+          </div>
+
+          <div class="settings-card card">
+            <div class="form-group">
+              <label>면접관 페르소나 (성향)</label>
+              <div class="persona-selector">
+                <label class="persona-option active">
+                  <input type="radio" name="persona" value="professional" checked>
+                  <div class="persona-content">
+                    <span class="persona-icon"><i class="fa-solid fa-user-tie"></i></span>
+                    <span class="persona-name">실무형 기술 면접관</span>
+                    <span class="persona-desc">실무 중심의 예리한 꼬리 질문과 역량 위주의 명확한 검증을 선호합니다.</span>
+                  </div>
+                </label>
+                <label class="persona-option">
+                  <input type="radio" name="persona" value="strict">
+                  <div class="persona-content">
+                    <span class="persona-icon"><i class="fa-solid fa-user-ninja"></i></span>
+                    <span class="persona-name">깐깐한 압박 면접관</span>
+                    <span class="persona-desc">답변의 논리성과 일관성을 날카롭게 검증하며, 돌발 상황 대처 능력을 평가합니다.</span>
+                  </div>
+                </label>
+                <label class="persona-option">
+                  <input type="radio" name="persona" value="friendly">
+                  <div class="persona-content">
+                    <span class="persona-icon"><i class="fa-solid fa-user-astronaut"></i></span>
+                    <span class="persona-name">친근한 격려 면접관</span>
+                    <span class="persona-desc">자연스럽고 편안한 분위기를 유도하며, 강점을 이끌어내고 조언을 해줍니다.</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group-row mt-6">
+              <div class="form-group">
+                <label for="select-question-count">질문 개수</label>
+                <select id="select-question-count">
+                  <option value="3">3개 질문 (빠른 연습)</option>
+                  <option value="5" selected>5개 질문 (표준 연습)</option>
+                  <option value="7">7개 질문 (심층 면접)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>음성 기능 사용</label>
+                <div class="toggle-container">
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="chk-use-voice" checked>
+                    <span class="slider round"></span>
+                  </label>
+                  <span class="toggle-label text-sm">TTS/STT 음성 기능 켜기</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="api-status-box" id="lobby-api-status">
+              <i class="fa-solid fa-circle-check text-success"></i>
+              <span class="status-text">Gemini API 연동 활성화 상태 (실시간 면접관 작동)</span>
+            </div>
+            
+            <div class="api-status-box warning" id="lobby-no-api-status">
+              <i class="fa-solid fa-circle-info text-warning"></i>
+              <span class="status-text">API Key 미등록 상태 (자체 내장 모의 면접 엔진으로 작동)</span>
+            </div>
+          </div>
+
+          <div class="form-actions justify-between mt-6">
+            <button type="button" id="btn-back-to-onboarding" class="btn-outline"><i class="fa-solid fa-chevron-left"></i> 이전 단계</button>
+            <button type="button" id="btn-start-interview" class="btn-primary btn-lg">면접 시작하기 <i class="fa-solid fa-play"></i></button>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 4: INTERVIEW (Real-time Chat Screen) -->
+      <section id="view-interview" class="app-view">
+        <div class="interview-layout">
+          <!-- Left: AI Interviewer Status Card -->
+          <div class="interviewer-panel">
+            <div class="panel-card card">
+              <div class="avatar-area">
+                <div class="avatar-glow"></div>
+                <div class="avatar-ring ring-1"></div>
+                <div class="avatar-ring ring-2"></div>
+                <div class="avatar-circle">
+                  <i class="fa-solid fa-robot" id="avatar-icon"></i>
+                </div>
+              </div>
+              <h3 class="interviewer-title" id="text-interviewer-name">AI 기술 면접관</h3>
+              <p class="interviewer-role" id="text-interviewer-type">실무 중심형 • 무제한 꼬리 질문</p>
+              
+              <div class="interview-stats">
+                <div class="stat-item">
+                  <span class="stat-label">진행 상황</span>
+                  <span class="stat-value" id="text-progress-ratio">1 / 5</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">답변 모드</span>
+                  <span class="stat-value text-teal" id="text-voice-mode">TTS / STT On</span>
+                </div>
+              </div>
+
+              <!-- Progress bar -->
+              <div class="progress-bar-container">
+                <div class="progress-bar" id="interview-progress-bar" style="width: 20%;"></div>
+              </div>
+
+              <div class="panel-actions mt-auto">
+                <button id="btn-speak-again" class="btn-secondary btn-block btn-sm" title="질문 다시 듣기">
+                  <i class="fa-solid fa-volume-high"></i> 질문 다시 듣기
+                </button>
+                <button id="btn-quit-interview" class="btn-danger btn-block btn-sm">
+                  <i class="fa-solid fa-circle-xmark"></i> 면접 중단하기
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Chat/Input Interface -->
+          <div class="chat-panel">
+            <!-- Chat history scroll area -->
+            <div class="chat-history" id="chat-history-container">
+              <!-- Example bot message -->
+              <div class="chat-message bot">
+                <div class="message-bubble">
+                  안녕하세요! 저는 오늘 면접을 진행하게 된 AI 면접관입니다. 제출해주신 이력을 바탕으로 면접을 진행하겠습니다. 첫 번째 질문입니다.
+                </div>
+              </div>
+            </div>
+
+            <!-- Speech input helper / animation -->
+            <div class="speech-status-banner hidden" id="speech-status-banner">
+              <span class="recording-dot"></span>
+              <span class="status-msg">음성 인식 중... 말씀해 주세요.</span>
+            </div>
+
+            <!-- Input area -->
+            <div class="chat-input-area card">
+              <textarea id="textarea-answer" rows="3" placeholder="질문에 대한 답변을 입력해 주세요. (음성 인식을 켜면 마이크로 답변이 가능합니다)"></textarea>
+              <div class="input-actions">
+                <button id="btn-stt-toggle" class="btn-icon-toggle" title="음성 인식(STT) 마이크">
+                  <i class="fa-solid fa-microphone-slash"></i>
+                </button>
+                <div class="character-counter text-xs ml-auto mr-4" id="char-counter">0자</div>
+                <button id="btn-submit-answer" class="btn-primary">
+                  답변 제출 <i class="fa-solid fa-paper-plane"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 5: REPORT (Analysis and Feedback) -->
+      <section id="view-report" class="app-view">
+        <div class="container-md">
+          <div class="report-header justify-between align-center">
+            <div>
+              <span class="report-badge">AI REPORT</span>
+              <h2>면접 종합 평가 보고서</h2>
+              <p class="text-sm">분석 일시: <span id="text-report-date">2026. 06. 20</span> | 지원 직무: <span id="text-report-job" class="font-bold text-teal">웹 프론트엔드 개발자</span></p>
+            </div>
+            <div class="report-header-actions no-print">
+              <button id="btn-print-report" class="btn-secondary">
+                <i class="fa-solid fa-print"></i> PDF 저장 / 인쇄
+              </button>
+              <button id="btn-restart" class="btn-primary">
+                새 면접 시작 <i class="fa-solid fa-rotate-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Report Main Grid -->
+          <div class="report-grid">
+            <!-- Left: Radar Chart Card -->
+            <div class="report-left card">
+              <h3 class="card-title"><i class="fa-solid fa-chart-line text-teal"></i> 역량 다차원 진단</h3>
+              <div class="chart-wrapper">
+                <canvas id="radarChart"></canvas>
+              </div>
+              <div class="chart-summary">
+                <div class="score-banner">
+                  <span class="score-label">종합 평가 점수</span>
+                  <span class="score-num" id="text-total-score">85<span class="score-max">/100</span></span>
+                </div>
+                <ul class="score-list">
+                  <li><span class="label">직무 적합도</span><span class="val font-bold text-teal" id="score-fit">85점</span></li>
+                  <li><span class="label">경험 구체성</span><span class="val font-bold text-teal" id="score-experience">80점</span></li>
+                  <li><span class="label">논리적 구성</span><span class="val font-bold text-teal" id="score-logic">90점</span></li>
+                  <li><span class="label">직무 전문성</span><span class="val font-bold text-teal" id="score-expert">88점</span></li>
+                  <li><span class="label">태도 및 표현</span><span class="val font-bold text-teal" id="score-delivery">82점</span></li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Right: Evaluation & Recommendations -->
+            <div class="report-right">
+              <!-- Summary Review -->
+              <div class="report-section card">
+                <h3 class="section-title text-success"><i class="fa-solid fa-circle-check"></i> 종합 강점 (잘한 점)</h3>
+                <p id="text-feedback-strengths" class="feedback-text leading-relaxed">
+                  프로젝트에서의 구체적인 역할 분담과 기술 스택 선정 이유를 논리적으로 잘 서술하셨습니다. 특히 React 아키텍처에 대한 이해가 깊어 보입니다.
+                </p>
+              </div>
+
+              <div class="report-section card">
+                <h3 class="section-title text-danger"><i class="fa-solid fa-circle-xmark"></i> 보완할 점 (부족한 점)</h3>
+                <p id="text-feedback-weaknesses" class="feedback-text leading-relaxed">
+                  개발 성과를 지표 위주로 설명하는 부분이 아쉽습니다. 트래픽 개선 수치나 성능 향상 지표를 구체적인 퍼센트(%)나 초 단위로 제시하면 신뢰도가 더 상승할 것입니다.
+                </p>
+              </div>
+
+              <div class="report-section card">
+                <h3 class="section-title text-teal"><i class="fa-solid fa-compass"></i> 향후 개선 방향</h3>
+                <p id="text-feedback-improvements" class="feedback-text leading-relaxed">
+                  STAR 기법(Situation, Task, Action, Result) 중 Result를 수치화하여 보강하는 연습을 권장합니다. 모의 테스트 시 성과 위주 질문에 대비하십시오.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom: Q&A Detailed Log & Recommendation -->
+          <div class="qa-details-section mt-6">
+            <h3 class="card-title mb-4"><i class="fa-solid fa-comments text-teal"></i> 문항별 상세 피드백 & 추천 답변</h3>
+            <div id="qa-details-container" class="qa-list">
+              <!-- Dynamically populated card items -->
+              <div class="qa-item card">
+                <div class="qa-q">
+                  <span class="badge badge-teal">질문 1</span>
+                  <p class="font-semibold text-lg">프로젝트에서 React 기반 쇼핑몰 결제 모듈을 만드셨다고 했는데, 비동기 상태 처리를 어떻게 해결하셨나요?</p>
+                </div>
+                <div class="qa-a">
+                  <span class="badge badge-secondary">작성한 답변</span>
+                  <p class="text-gray-600">Redux Toolkit을 사용하여 비동기 thunk를 구현했고, 로딩과 에러, 성공 상태를 관리하여 에러 처리를 하였습니다.</p>
+                </div>
+                <div class="qa-feedback mt-4">
+                  <div class="feedback-sub-title text-teal"><i class="fa-solid fa-wand-magic-sparkles"></i> AI 추천 모범 답변</div>
+                  <p class="recommendation-text leading-relaxed text-sm text-gray-700 bg-teal-soft p-3 rounded">
+                    "Redux Toolkit의 `createAsyncThunk`를 활용해 결제 요청 상태(pending, fulfilled, rejected)를 각각 바인딩하여 유기적으로 에러를 추적했습니다. 특히 네트워크 지연 시 사용자 경험을 배려하여 결제 요청 후 중복 결제 방지를 위한 토큰 락(Lock)을 구현했고, 에러 시 롤백 로직을 상태 관리에 태워 처리했습니다."
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="report-footer-actions mt-6 text-center no-print">
+            <button class="btn-outline btn-lg btn-back-home" style="min-width: 200px;">
+              <i class="fa-solid fa-house"></i> 홈 화면으로
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Global API Key Modal -->
+    <div id="modal-api" class="modal-overlay">
+      <div class="modal-content card">
+        <div class="modal-header">
+          <h3><i class="fa-solid fa-key text-teal"></i> Gemini API Key 설정</h3>
+          <button id="btn-close-modal" class="btn-icon-only"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-sm text-muted mb-4">
+            이 서비스는 Google Gemini API를 활용하여 실시간 꼬리 질문과 초개인화 피드백을 제공합니다.<br>
+            입력하신 API Key는 브라우저의 로컬 스토리지에만 안전하게 저장되며, 외부 서버로 전송되지 않습니다.
+          </p>
+          <div class="form-group">
+            <label for="input-api-key">Gemini API Key</label>
+            <div class="input-with-icon">
+              <input type="password" id="input-api-key" placeholder="AIzaSy..." class="input-block">
+              <button id="btn-toggle-key-visibility" class="btn-icon-only"><i class="fa-solid fa-eye"></i></button>
+            </div>
+            <span class="helper-text">Key가 없어도 로컬 시나리오 기반의 면접이 완벽하게 지원됩니다.</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-delete-api-key" class="btn-danger-outline btn-sm">Key 지우기</button>
+          <div class="flex gap-2">
+            <button id="btn-close-modal-cancel" class="btn-outline btn-sm">취소</button>
+            <button id="btn-save-api-key" class="btn-primary btn-sm">저장하기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Processing Overlay (Loading UI for Analysis / AI Generating Questions) -->
+    <div id="overlay-processing" class="overlay-processing">
+      <div class="processing-content">
+        <div class="spinner-orbit">
+          <div class="orbit-circle ring-1"></div>
+          <div class="orbit-circle ring-2"></div>
+          <div class="orbit-circle ring-3"></div>
+          <div class="spinner-core"><i class="fa-solid fa-brain"></i></div>
+        </div>
+        <h3 id="text-processing-title" class="processing-title">AI 면접관이 질문을 출제하고 있습니다</h3>
+        <p id="text-processing-desc" class="processing-desc">작성하신 정보를 분석하여 맞춤형 질문 구성을 생성하고 있습니다. 잠시만 기다려 주세요...</p>
+      </div>
+    </div>
+
+    <!-- Alert / Toast Notification -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Footer -->
+    <footer class="app-footer no-print">
+      <p>© 2026 My AI Interviewer. All rights reserved. Built with premium Vanilla JS & Gemini AI.</p>
+    </footer>
+  </div>
+
+  <!-- Main Logic Script -->
+  <script src="script.js"></script>
+</body>
+</html>
